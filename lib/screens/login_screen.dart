@@ -56,7 +56,7 @@ class LoginScreen extends StatelessWidget {
                         builder: (_) => const HomeScreen(),
                       ),
                     ),
-                    child: const Text('Посмотреть интерфейс'),
+                    child: const Text('Войти'),
                   ),
                   const SizedBox(height: 8),
                   TextButton(

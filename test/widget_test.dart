@@ -9,7 +9,7 @@ void main() {
     expect(find.text('CampusSpace'), findsOneWidget);
     expect(find.byType(TextField), findsNWidgets(2));
 
-    await tester.tap(find.text('Посмотреть интерфейс'));
+    await tester.tap(find.text('Войти'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Каталог помещений'));
     await tester.pumpAndSettle();

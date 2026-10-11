@@ -38,7 +38,7 @@ class ProfileScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     LabeledValueRow(label: 'Роль', value: 'Студент'),
-                    LabeledValueRow(label: 'Группа', value: 'ISA-241'),
+                    LabeledValueRow(label: 'Группа', value: 'TI-235'),
                     LabeledValueRow(
                       label: 'Почта',
                       value: 'student@example.edu',
