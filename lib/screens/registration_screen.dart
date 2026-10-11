@@ -28,7 +28,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Данные проверены. Демо: аккаунт не создаётся.')),
+      const SnackBar(
+        content: Text('Данные проверены. Демо: аккаунт не создаётся.'),
+      ),
     );
     context.go('/login');
   }
@@ -43,60 +45,60 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           child: Form(
             key: _formKey,
             child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Создать аккаунт',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 24),
-              TextFormField(
-                key: const ValueKey('registrationName'),
-                controller: _nameCtrl,
-                validator: AuthValidators.name,
-                textCapitalization: TextCapitalization.words,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Имя',
-                  prefixIcon: Icon(Icons.person_outline),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Создать аккаунт',
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                key: const ValueKey('registrationEmail'),
-                controller: _emailCtrl,
-                validator: AuthValidators.email,
-                textInputAction: TextInputAction.next,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Почта',
-                  prefixIcon: Icon(Icons.mail_outline),
+                const SizedBox(height: 24),
+                TextFormField(
+                  key: const ValueKey('registrationName'),
+                  controller: _nameCtrl,
+                  validator: AuthValidators.name,
+                  textCapitalization: TextCapitalization.words,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(
+                    labelText: 'Имя',
+                    prefixIcon: Icon(Icons.person_outline),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                key: const ValueKey('registrationPassword'),
-                controller: _passwordCtrl,
-                validator: AuthValidators.password,
-                textInputAction: TextInputAction.done,
-                onFieldSubmitted: (_) => _register(),
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Пароль',
-                  prefixIcon: Icon(Icons.lock_outline),
+                const SizedBox(height: 16),
+                TextFormField(
+                  key: const ValueKey('registrationEmail'),
+                  controller: _emailCtrl,
+                  validator: AuthValidators.email,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    labelText: 'Почта',
+                    prefixIcon: Icon(Icons.mail_outline),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              FilledButton(
-                onPressed: _register,
-                child: const Text('Создать аккаунт'),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Учебный режим: проверка данных без создания аккаунта',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
+                const SizedBox(height: 16),
+                TextFormField(
+                  key: const ValueKey('registrationPassword'),
+                  controller: _passwordCtrl,
+                  validator: AuthValidators.password,
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (_) => _register(),
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Пароль',
+                    prefixIcon: Icon(Icons.lock_outline),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                FilledButton(
+                  onPressed: _register,
+                  child: const Text('Создать аккаунт'),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Учебный режим: проверка данных без создания аккаунта',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
             ),
           ),
         ),

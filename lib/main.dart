@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'router.dart';
 
 void main() => runApp(const CampusSpaceApp());
 
 class CampusSpaceApp extends StatelessWidget {
-  const CampusSpaceApp({super.key});
+  const CampusSpaceApp({super.key, this.routerConfig});
+
+  final GoRouter? routerConfig;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +22,7 @@ class CampusSpaceApp extends StatelessWidget {
           border: OutlineInputBorder(),
         ),
       ),
-      routerConfig: router,
+      routerConfig: routerConfig ?? router,
     );
   }
 }

@@ -12,7 +12,6 @@ abstract final class AuthValidators {
       ? 'Пароль должен содержать минимум 6 символов'
       : null;
 
-  static String? name(String? value) => value == null || value.trim().isEmpty
-      ? 'Введите имя'
-      : null;
+  static String? name(String? value) =>
+      value == null || value.trim().isEmpty ? 'Введите имя' : null;
 }

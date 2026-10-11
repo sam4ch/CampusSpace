@@ -2,13 +2,16 @@ import '../models/room.dart';
 
 abstract final class BookingValidators {
   static DateTime? parseDate(String text) {
-    final match = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(text.trim());
+    final match = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$')
+        .firstMatch(text.trim());
     if (match == null) return null;
     final day = int.parse(match[1]!);
     final month = int.parse(match[2]!);
     final year = int.parse(match[3]!);
     final date = DateTime(year, month, day);
-    return date.year == year && date.month == month && date.day == day ? date : null;
+    return date.year == year && date.month == month && date.day == day
+        ? date
+        : null;
   }
 
   static int? parseTime(String text) {
@@ -30,16 +33,23 @@ abstract final class BookingValidators {
     return null;
   }
 
-  static String? start(String? value, String dateText, Room room, {DateTime? now}) {
+  static String? start(
+    String? value,
+    String dateText,
+    Room room, {
+    DateTime? now,
+  }) {
     if (value == null || value.trim().isEmpty) return 'Укажите время начала';
     final minutes = parseTime(value);
     if (minutes == null) return 'Введите время ЧЧ:ММ от 00:00 до 23:59';
     final hours = room.hours.split('–');
-    if (minutes < parseTime(hours.first)! || minutes >= parseTime(hours.last)!) {
-      return 'Начало должно быть в пределах ' + room.hours;
+    if (minutes < parseTime(hours.first)! ||
+        minutes >= parseTime(hours.last)!) {
+      return 'Начало должно быть в пределах ${room.hours}';
     }
     final day = parseDate(dateText);
-    if (day != null && !day.add(Duration(minutes: minutes)).isAfter(now ?? DateTime.now())) {
+    if (day != null &&
+        !day.add(Duration(minutes: minutes)).isAfter(now ?? DateTime.now())) {
       return 'Начало бронирования должно быть в будущем';
     }
     return null;
@@ -50,11 +60,14 @@ abstract final class BookingValidators {
     final minutes = parseTime(value);
     if (minutes == null) return 'Введите время ЧЧ:ММ от 00:00 до 23:59';
     final hours = room.hours.split('–');
-    if (minutes <= parseTime(hours.first)! || minutes > parseTime(hours.last)!) {
-      return 'Окончание должно быть в пределах ' + room.hours;
+    if (minutes <= parseTime(hours.first)! ||
+        minutes > parseTime(hours.last)!) {
+      return 'Окончание должно быть в пределах ${room.hours}';
     }
     final start = parseTime(startText);
-    if (start != null && minutes <= start) return 'Окончание должно быть позже начала';
+    if (start != null && minutes <= start) {
+      return 'Окончание должно быть позже начала';
+    }
     return null;
   }
 
@@ -66,5 +79,6 @@ abstract final class BookingValidators {
   }
 
   static String? purpose(String? value) => value == null || value.trim().isEmpty
-      ? 'Укажите цель бронирования' : null;
+      ? 'Укажите цель бронирования'
+      : null;
 }
