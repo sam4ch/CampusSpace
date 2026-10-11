@@ -1,9 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../widgets/labeled_value_row.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
+  Future<void> _logout(BuildContext context) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Выйти из аккаунта?'),
+        content: const Text('Вы вернётесь на экран входа.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx, false),
+            child: const Text('Нет'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogCtx, true),
+            child: const Text('Да, выйти'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && context.mounted) context.go('/login');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +74,12 @@ class ProfileScreen extends StatelessWidget {
             Text(
               'Профиль заполнен демонстрационными данными.',
               style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 24),
+            OutlinedButton.icon(
+              onPressed: () => _logout(context),
+              icon: const Icon(Icons.logout),
+              label: const Text('Выйти из аккаунта'),
             ),
           ],
         ),

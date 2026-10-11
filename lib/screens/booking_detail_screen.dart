@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/mock_data.dart';
+import '../models/booking.dart';
 import '../widgets/booking_status_badge.dart';
 import '../widgets/labeled_value_row.dart';
 import 'not_found_screen.dart';
@@ -10,6 +11,35 @@ class BookingDetailScreen extends StatelessWidget {
   const BookingDetailScreen({super.key, required this.id});
 
   final String id;
+
+  Future<void> _cancel(BuildContext context) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Отменить бронирование?'),
+        content: const Text(
+          'Учебная демонстрация: статус заявки не изменится.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx, false),
+            child: const Text('Оставить'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogCtx, true),
+            child: const Text('Да, отменить'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Отмена подтверждена. Демо: статус не изменён.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +88,15 @@ class BookingDetailScreen extends StatelessWidget {
               'Реальные заявки и изменения статуса появятся на L5.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
+            if (booking.status == BookingStatus.pending ||
+                booking.status == BookingStatus.approved) ...[
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: () => _cancel(context),
+                icon: const Icon(Icons.cancel_outlined),
+                label: const Text('Отменить бронирование'),
+              ),
+            ],
           ],
         ),
       ),
