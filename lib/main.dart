@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MainApp());
-}
+import 'screens/login_screen.dart';
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+void main() => runApp(const CampusSpaceApp());
+
+class CampusSpaceApp extends StatelessWidget {
+  const CampusSpaceApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
+    return MaterialApp(
+      title: 'CampusSpace',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF246A73)),
+        inputDecorationTheme: const InputDecorationTheme(
+          border: OutlineInputBorder(),
+        ),
+      ),
+      home: const LoginScreen(),
     );
   }
 }
