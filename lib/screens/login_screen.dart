@@ -1,9 +1,35 @@
 import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
+import '../validation/auth_validators.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _passwordCtrl.dispose();
+    super.dispose();
+  }
+
+  void _login() {
+    if (!_formKey.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Вход выполнен в демонстрационном режиме')),
+    );
+    context.go('/rooms');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +41,9 @@ class LoginScreen extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
-              child: Column(
+              child: Form(
+                key: _formKey,
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Icon(Icons.meeting_room, size: 72, color: colors.primary),
@@ -32,16 +60,25 @@ class LoginScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 32),
-                  const TextField(
-                    decoration: InputDecoration(
+                  TextFormField(
+                    key: const ValueKey('loginEmail'),
+                    controller: _emailCtrl,
+                    validator: AuthValidators.email,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
                       labelText: 'Университетская почта',
                       prefixIcon: Icon(Icons.mail_outline),
                     ),
                     keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 16),
-                  const TextField(
-                    decoration: InputDecoration(
+                  TextFormField(
+                    key: const ValueKey('loginPassword'),
+                    controller: _passwordCtrl,
+                    validator: AuthValidators.password,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (_) => _login(),
+                    decoration: const InputDecoration(
                       labelText: 'Пароль',
                       prefixIcon: Icon(Icons.lock_outline),
                     ),
@@ -49,7 +86,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   FilledButton(
-                    onPressed: () => context.go('/rooms'),
+                    onPressed: _login,
                     child: const Text('Войти'),
                   ),
                   const SizedBox(height: 8),
@@ -59,11 +96,12 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Демо L2: вход без проверки данных',
+                    'Учебный режим: подойдут любые корректные данные',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
+                ),
               ),
             ),
           ),
