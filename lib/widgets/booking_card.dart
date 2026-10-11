@@ -30,16 +30,22 @@ class BookingCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Expanded(child: Text(room.name,
-                      style: Theme.of(context).textTheme.titleMedium)),
+                  Expanded(
+                    child: Text(
+                      room.name,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
                   BookingStatusBadge(status: booking.status),
                 ],
               ),
               const SizedBox(height: 8),
               Text('${booking.date} · ${booking.time}'),
               const SizedBox(height: 4),
-              Text(booking.purpose,
-                  style: Theme.of(context).textTheme.bodySmall),
+              Text(
+                booking.purpose,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ],
           ),
         ),

@@ -28,22 +28,34 @@ class RoomCard extends StatelessWidget {
                   color: colors.primaryContainer,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(Icons.meeting_room_outlined,
-                    color: colors.onPrimaryContainer, size: 32),
+                child: Icon(
+                  Icons.meeting_room_outlined,
+                  color: colors.onPrimaryContainer,
+                  size: 32,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(room.name, style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      room.name,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 4),
-                    Text('${room.building} · ${room.floor} этаж · ${room.type}',
-                        style: Theme.of(context).textTheme.bodySmall),
+                    Text(
+                      '${room.building} · ${room.floor} этаж · ${room.type}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.people_outline, size: 16, color: colors.primary),
+                        Icon(
+                          Icons.people_outline,
+                          size: 16,
+                          color: colors.primary,
+                        ),
                         const SizedBox(width: 4),
                         Text('До ${room.capacity} человек'),
                       ],
