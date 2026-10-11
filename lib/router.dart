@@ -10,6 +10,7 @@ import 'screens/profile_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/room_catalog_screen.dart';
 import 'screens/room_detail_screen.dart';
+import 'widgets/app_shell.dart';
 
 // Built once, outside build. Restart after changing the route map.
 final router = createRouter();
@@ -23,30 +24,52 @@ GoRouter createRouter({String initialLocation = '/login'}) => GoRouter(
       path: '/register',
       builder: (context, state) => const RegistrationScreen(),
     ),
-    GoRoute(
-      path: '/rooms',
-      builder: (context, state) => const RoomCatalogScreen(),
-      routes: roomRoutes(),
-    ),
-    GoRoute(
-      path: '/bookings',
-      builder: (context, state) => const MyBookingsScreen(),
-      routes: [
-        GoRoute(
-          path: ':id',
-          builder: (context, state) =>
-              BookingDetailScreen(id: state.pathParameters['id']!),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) =>
+          AppShell(navigationShell: navigationShell),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/rooms',
+              builder: (context, state) => const RoomCatalogScreen(),
+              routes: roomRoutes(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/bookings',
+              builder: (context, state) => const MyBookingsScreen(),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (context, state) =>
+                      BookingDetailScreen(id: state.pathParameters['id']!),
+                ),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/favorites',
+              builder: (context, state) => const FavoritesScreen(),
+              routes: roomRoutes(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              builder: (context, state) => const ProfileScreen(),
+            ),
+          ],
         ),
       ],
-    ),
-    GoRoute(
-      path: '/favorites',
-      builder: (context, state) => const FavoritesScreen(),
-      routes: roomRoutes(),
-    ),
-    GoRoute(
-      path: '/profile',
-      builder: (context, state) => const ProfileScreen(),
     ),
   ],
 );
