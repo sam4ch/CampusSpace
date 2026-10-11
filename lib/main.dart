@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/login_screen.dart';
+import 'router.dart';
 
 void main() => runApp(const CampusSpaceApp());
 
@@ -9,7 +9,7 @@ class CampusSpaceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'CampusSpace',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -19,7 +19,7 @@ class CampusSpaceApp extends StatelessWidget {
           border: OutlineInputBorder(),
         ),
       ),
-      home: const LoginScreen(),
+      routerConfig: router,
     );
   }
 }

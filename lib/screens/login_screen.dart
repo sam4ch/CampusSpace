@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'home_screen.dart';
-import 'registration_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -50,22 +49,12 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   FilledButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (_) => const HomeScreen(),
-                      ),
-                    ),
+                    onPressed: () => context.go('/rooms'),
                     child: const Text('Войти'),
                   ),
                   const SizedBox(height: 8),
                   TextButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (_) => const RegistrationScreen(),
-                      ),
-                    ),
+                    onPressed: () => context.push('/register'),
                     child: const Text('Нет аккаунта? Регистрация'),
                   ),
                   const SizedBox(height: 16),

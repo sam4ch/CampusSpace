@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../models/room.dart';
+import '../data/mock_data.dart';
+import 'not_found_screen.dart';
 
 class BookingFormScreen extends StatelessWidget {
-  const BookingFormScreen({super.key, required this.room});
+  const BookingFormScreen({super.key, required this.roomId});
 
-  final Room room;
+  final String roomId;
 
   @override
   Widget build(BuildContext context) {
+    final room = MockData.findRoom(roomId);
+    if (room == null) return const NotFoundScreen();
     return Scaffold(
       appBar: AppBar(title: const Text('Новое бронирование')),
       body: SafeArea(

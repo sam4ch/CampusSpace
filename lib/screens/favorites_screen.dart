@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../data/mock_data.dart';
 import '../widgets/room_card.dart';
-import 'room_detail_screen.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
@@ -31,12 +31,7 @@ class FavoritesScreen extends StatelessWidget {
             for (final room in rooms)
               RoomCard(
                 room: room,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (_) => RoomDetailScreen(room: room),
-                  ),
-                ),
+                onTap: () => context.push('/favorites/${room.id}'),
               ),
           ],
         ),

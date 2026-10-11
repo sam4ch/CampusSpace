@@ -1,7 +1,7 @@
 import '../models/booking.dart';
 import '../models/room.dart';
 
-/// Demonstration data for L2. These are examples, not the university's live timetable.
+/// Local examples for L2/L3, not the university's live timetable.
 abstract final class MockData {
   static const rooms = <Room>[
     Room(
@@ -175,4 +175,18 @@ abstract final class MockData {
   ];
 
   static Room roomById(String id) => rooms.firstWhere((room) => room.id == id);
+
+  static Room? findRoom(String id) {
+    for (final room in rooms) {
+      if (room.id == id) return room;
+    }
+    return null;
+  }
+
+  static Booking? findBooking(String id) {
+    for (final booking in bookings) {
+      if (booking.id == id) return booking;
+    }
+    return null;
+  }
 }

@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import '../models/room.dart';
+import '../data/mock_data.dart';
 import '../widgets/labeled_value_row.dart';
-import 'booking_form_screen.dart';
+import 'not_found_screen.dart';
 
 class RoomDetailScreen extends StatelessWidget {
-  const RoomDetailScreen({super.key, required this.room});
+  const RoomDetailScreen({super.key, required this.id});
 
-  final Room room;
+  final String id;
 
   @override
   Widget build(BuildContext context) {
+    final room = MockData.findRoom(id);
+    if (room == null) return const NotFoundScreen();
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: Text(room.name)),
@@ -70,12 +73,8 @@ class RoomDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             FilledButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (_) => BookingFormScreen(room: room),
-                ),
-              ),
+              onPressed: () =>
+                  context.push('${GoRouterState.of(context).uri.path}/booking'),
               icon: const Icon(Icons.add),
               label: const Text('Выбрать помещение'),
             ),

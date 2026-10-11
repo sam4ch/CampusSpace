@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../data/mock_data.dart';
-import '../models/booking.dart';
 import '../widgets/booking_status_badge.dart';
 import '../widgets/labeled_value_row.dart';
-import 'room_detail_screen.dart';
+import 'not_found_screen.dart';
 
 class BookingDetailScreen extends StatelessWidget {
-  const BookingDetailScreen({super.key, required this.booking});
+  const BookingDetailScreen({super.key, required this.id});
 
-  final Booking booking;
+  final String id;
 
   @override
   Widget build(BuildContext context) {
+    final booking = MockData.findBooking(id);
+    if (booking == null) return const NotFoundScreen();
     final room = MockData.roomById(booking.roomId);
     return Scaffold(
       appBar: AppBar(title: Text('Заявка ${booking.id}')),
@@ -47,12 +49,7 @@ class BookingDetailScreen extends StatelessWidget {
                 title: const Text('О помещении'),
                 subtitle: Text('${room.building} · ${room.floor} этаж'),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (_) => RoomDetailScreen(room: room),
-                  ),
-                ),
+                onTap: () => context.go('/rooms/${room.id}'),
               ),
             ),
             const SizedBox(height: 16),

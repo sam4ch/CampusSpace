@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../data/mock_data.dart';
 import '../widgets/room_card.dart';
-import 'room_detail_screen.dart';
 
 class RoomCatalogScreen extends StatelessWidget {
   const RoomCatalogScreen({super.key});
@@ -58,12 +58,7 @@ class RoomCatalogScreen extends StatelessWidget {
             for (final room in MockData.rooms)
               RoomCard(
                 room: room,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (_) => RoomDetailScreen(room: room),
-                  ),
-                ),
+                onTap: () => context.push('/rooms/${room.id}'),
               ),
           ],
         ),

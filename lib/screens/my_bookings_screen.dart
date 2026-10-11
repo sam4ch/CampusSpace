@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../data/mock_data.dart';
 import '../widgets/booking_card.dart';
-import 'booking_detail_screen.dart';
 
 class MyBookingsScreen extends StatelessWidget {
   const MyBookingsScreen({super.key});
@@ -29,12 +29,7 @@ class MyBookingsScreen extends StatelessWidget {
               BookingCard(
                 booking: booking,
                 room: MockData.roomById(booking.roomId),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (_) => BookingDetailScreen(booking: booking),
-                  ),
-                ),
+                onTap: () => context.push('/bookings/${booking.id}'),
               ),
           ],
         ),
