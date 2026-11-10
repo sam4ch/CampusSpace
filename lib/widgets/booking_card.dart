@@ -13,7 +13,7 @@ class BookingCard extends StatelessWidget {
   });
 
   final Booking booking;
-  final Room room;
+  final Room? room;
   final VoidCallback onTap;
 
   @override
@@ -32,7 +32,7 @@ class BookingCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      room.name,
+                      room?.name ?? 'Помещение ${booking.roomId} недоступно',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
@@ -40,6 +40,7 @@ class BookingCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
+              Text(booking.id),
               Text('${booking.date} · ${booking.time}'),
               const SizedBox(height: 4),
               Text(

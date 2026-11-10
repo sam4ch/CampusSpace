@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../models/room_model.dart';
+import '../models/booking_model.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.navigationShell});
@@ -20,8 +21,11 @@ class AppShell extends StatelessWidget {
           icon: Icon(Icons.meeting_room_outlined),
           label: 'Каталог',
         ),
-        const NavigationDestination(
-          icon: Icon(Icons.event_note_outlined),
+        NavigationDestination(
+          icon: Consumer<BookingModel>(
+            builder: (_, model, child) => Badge(label: Text('${model.activeCount}'), child: child!),
+            child: const Icon(Icons.event_note_outlined),
+          ),
           label: 'Мои заявки',
         ),
         NavigationDestination(
