@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
-import '../data/mock_data.dart';
+import 'package:provider/provider.dart';
+import '../models/room_model.dart';
+import '../models/booking_model.dart';
+import '../models/booking.dart';
+import '../widgets/data_view.dart';
 import '../validation/booking_validators.dart';
 import 'not_found_screen.dart';
 
@@ -20,6 +24,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   final _endCtrl = TextEditingController();
   final _participantsCtrl = TextEditingController();
   final _purposeCtrl = TextEditingController();
+  bool _submitting = false;
 
   @override
   void dispose() {
@@ -31,25 +36,39 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
+    if (_submitting) return;
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Заявка проверена. Демо: данные не сохранены.'),
-      ),
-    );
+    setState(() => _submitting = true);
+    final error = await context.read<BookingModel>().add(Booking(
+      id: '', roomId: widget.roomId, date: _dateCtrl.text.trim(),
+      time: '${_startCtrl.text.trim()}–${_endCtrl.text.trim()}',
+      participants: int.parse(_participantsCtrl.text),
+      purpose: _purposeCtrl.text.trim(), status: BookingStatus.pending,
+    ));
+    if (!mounted) return;
+    setState(() => _submitting = false);
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      return; // Controllers keep their values on error.
+    }
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Заявка создана')));
     context.pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    final room = MockData.findRoom(widget.roomId);
-    if (room == null) return const NotFoundScreen();
+    final rooms = context.watch<RoomModel>();
+    final bookings = context.watch<BookingModel>();
+    final room = rooms.byId(widget.roomId);
     return Scaffold(
       appBar: AppBar(title: const Text('Новое бронирование')),
-      body: SafeArea(
-        child: Form(
+      body: SafeArea(child: DataView(models: [rooms, bookings],
+        onRetry: () { context.read<RoomModel>().load(); context.read<BookingModel>().load(); },
+        builder: (context) {
+          if (room == null) return const NotFoundScreen();
+          return Form(
           key: _formKey,
           child: ListView(
             padding: const EdgeInsets.all(16),
@@ -143,18 +162,19 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               const SizedBox(height: 24),
               FilledButton(
                 key: const ValueKey('bookingSubmit'),
-                onPressed: _submit,
-                child: const Text('Отправить заявку'),
+                onPressed: _submitting || bookings.isSaving ? null : _submit,
+                child: Text(_submitting ? 'Сохранение…' : 'Отправить заявку'),
               ),
               const SizedBox(height: 8),
               Text(
-                'Учебная демонстрация: заявка проверяется без сохранения.',
+                'L4: заявка сохранится в памяти до перезапуска приложения.',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),
-        ),
-      ),
+          );
+        },
+      )),
     );
   }
 }
