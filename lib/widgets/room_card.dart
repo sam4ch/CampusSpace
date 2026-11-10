@@ -57,7 +57,7 @@ class RoomCard extends StatelessWidget {
                           color: colors.primary,
                         ),
                         const SizedBox(width: 4),
-                        Text('До ${room.capacity} человек'),
+                        Expanded(child: Text('До ${room.capacity} человек')),
                       ],
                     ),
                   ],

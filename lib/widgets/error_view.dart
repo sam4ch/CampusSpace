@@ -8,13 +8,20 @@ class ErrorView extends StatelessWidget {
   Widget build(BuildContext context) => Center(
     child: Padding(
       padding: const EdgeInsets.all(24),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Icon(Icons.cloud_off, color: Theme.of(context).colorScheme.error, size: 40),
-        const SizedBox(height: 12),
-        Text(message, textAlign: TextAlign.center),
-        const SizedBox(height: 12),
-        FilledButton(onPressed: onRetry, child: const Text('Повторить')),
-      ]),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.cloud_off,
+            color: Theme.of(context).colorScheme.error,
+            size: 40,
+          ),
+          const SizedBox(height: 12),
+          Text(message, textAlign: TextAlign.center),
+          const SizedBox(height: 12),
+          FilledButton(onPressed: onRetry, child: const Text('Повторить')),
+        ],
+      ),
     ),
   );
 }

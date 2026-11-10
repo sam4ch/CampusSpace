@@ -15,8 +15,13 @@ void main() => runApp(CampusSpaceRoot());
 
 /// Composition root: replace concrete repositories here on L5, not in screens.
 class CampusSpaceRoot extends StatelessWidget {
-  CampusSpaceRoot({super.key, this.routerConfig, MockSettings? settings,
-    RoomRepository? roomRepository, BookingRepository? bookingRepository}) {
+  CampusSpaceRoot({
+    super.key,
+    this.routerConfig,
+    MockSettings? settings,
+    RoomRepository? roomRepository,
+    BookingRepository? bookingRepository,
+  }) {
     this.settings = settings ?? MockSettings();
     rooms = roomRepository ?? MockRoomRepository(this.settings);
     bookings = bookingRepository ?? MockBookingRepository(this.settings, rooms);

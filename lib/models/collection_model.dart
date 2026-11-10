@@ -32,8 +32,10 @@ abstract class CollectionModel<T> extends ChangeNotifier {
     final result = await _repository.fetchAll();
     if (_disposed) return;
     switch (result) {
-      case Ok(:final value): _items = List.of(value);
-      case Err(:final msg): _error = msg;
+      case Ok(:final value):
+        _items = List.of(value);
+      case Err(:final msg):
+        _error = msg;
     }
     _loading = false;
     notifyListeners();
@@ -41,24 +43,34 @@ abstract class CollectionModel<T> extends ChangeNotifier {
 
   Future<String?> add(T draft) => _write(() async {
     switch (await _repository.create(draft)) {
-      case Ok(:final value): _items = [value, ..._items]; return null;
-      case Err(:final msg): return msg;
+      case Ok(:final value):
+        _items = [value, ..._items];
+        return null;
+      case Err(:final msg):
+        return msg;
     }
   });
 
   Future<String?> update(T item) => _write(() async {
     switch (await _repository.update(item)) {
       case Ok(:final value):
-        _items = [for (final old in _items) if (idOf(old) == idOf(value)) value else old];
+        _items = [
+          for (final old in _items)
+            if (idOf(old) == idOf(value)) value else old,
+        ];
         return null;
-      case Err(:final msg): return msg;
+      case Err(:final msg):
+        return msg;
     }
   });
 
   Future<String?> remove(String id) => _write(() async {
     switch (await _repository.delete(id)) {
-      case Ok(): _items = _items.where((item) => idOf(item) != id).toList(); return null;
-      case Err(:final msg): return msg;
+      case Ok():
+        _items = _items.where((item) => idOf(item) != id).toList();
+        return null;
+      case Err(:final msg):
+        return msg;
     }
   });
 

@@ -10,6 +10,8 @@ class Room {
     required this.description,
     required this.hours,
     this.isFavorite = false,
+    // Keep the public named argument while exposing equipment only read-only.
+    // ignore: prefer_initializing_formals
   }) : _equipment = equipment;
 
   final String id;
@@ -25,9 +27,15 @@ class Room {
   final bool isFavorite;
 
   Room copyWith({String? id, bool? isFavorite}) => Room(
-    id: id ?? this.id, name: name, building: building, floor: floor,
-    type: type, capacity: capacity, equipment: equipment,
-    description: description, hours: hours,
+    id: id ?? this.id,
+    name: name,
+    building: building,
+    floor: floor,
+    type: type,
+    capacity: capacity,
+    equipment: equipment,
+    description: description,
+    hours: hours,
     isFavorite: isFavorite ?? this.isFavorite,
   );
 }

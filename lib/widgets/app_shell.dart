@@ -23,17 +23,16 @@ class AppShell extends StatelessWidget {
         ),
         NavigationDestination(
           icon: Consumer<BookingModel>(
-            builder: (_, model, child) => Badge(label: Text('${model.activeCount}'), child: child!),
+            builder: (_, model, child) =>
+                Badge(label: Text('${model.activeCount}'), child: child!),
             child: const Icon(Icons.event_note_outlined),
           ),
           label: 'Мои заявки',
         ),
         NavigationDestination(
           icon: Consumer<RoomModel>(
-            builder: (_, model, child) => Badge(
-              label: Text('${model.favoriteCount}'),
-              child: child!,
-            ),
+            builder: (_, model, child) =>
+                Badge(label: Text('${model.favoriteCount}'), child: child!),
             child: const Icon(Icons.favorite_border),
           ),
           label: 'Избранное',

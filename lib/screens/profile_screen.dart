@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../data/mock_settings.dart';
 import '../models/room_model.dart';
 import '../models/booking_model.dart';
@@ -30,10 +31,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (dialogCtx) => AlertDialog(
         title: const Text('Выйти из аккаунта?'),
-        content: const Text('Вы вернётесь на экран входа. Учебные данные остаются в памяти до перезапуска.'),
+        content: const Text(
+          'Вы вернётесь на экран входа. Учебные данные остаются в памяти до перезапуска.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogCtx, false), child: const Text('Нет')),
-          FilledButton(onPressed: () => Navigator.pop(dialogCtx, true), child: const Text('Да, выйти')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx, false),
+            child: const Text('Нет'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogCtx, true),
+            child: const Text('Да, выйти'),
+          ),
         ],
       ),
     );
@@ -46,51 +55,88 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final bookings = context.watch<BookingModel>();
     return Scaffold(
       appBar: AppBar(title: const Text('Профиль')),
-      body: SafeArea(child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Icon(Icons.person_outline, size: 64),
-          const SizedBox(height: 12),
-          const Text('Учебный режим CampusSpace', textAlign: TextAlign.center),
-          const SizedBox(height: 12),
-          const Text('Вход и регистрация проверяют поля локально. Серверная учётная запись появится на L5.'),
-          const SizedBox(height: 16),
-          SizedBox(height: 180, child: DataView(models: [rooms, bookings],
-            onRetry: () { context.read<RoomModel>().load(); context.read<BookingModel>().load(); },
-            builder: (_) => Column(children: [
-              LabeledValueRow(label: 'Помещений', value: '${rooms.rooms.length}'),
-              LabeledValueRow(label: 'В избранном', value: '${rooms.favoriteCount}'),
-              LabeledValueRow(label: 'Всего заявок', value: '${bookings.bookings.length}'),
-              LabeledValueRow(label: 'Активных заявок', value: '${bookings.activeCount}'),
-            ]),
-          )),
-          // The only screen that knows about mock infrastructure. Remove on L5.
-          SwitchListTile(
-            key: const ValueKey('simulateError'),
-            title: const Text('Симулировать сбой сети'),
-            subtitle: const Text('Включите и обновите каталог или отправьте форму.'),
-            value: _simulateError,
-            onChanged: (value) {
-              context.read<MockSettings>().simulateError = value;
-              setState(() => _simulateError = value);
-            },
-          ),
-          SwitchListTile(
-            key: const ValueKey('slowLoading'),
-            title: const Text('Задержка 3 секунды для скриншота'),
-            value: _slow,
-            onChanged: (value) {
-              context.read<MockSettings>().latency = Duration(milliseconds: value ? 3000 : 800);
-              setState(() => _slow = value);
-            },
-          ),
-          const SizedBox(height: 16),
-          const Text('L4: данные хранятся только в памяти. Hot restart восстанавливает начальные примеры.'),
-          const SizedBox(height: 16),
-          OutlinedButton.icon(onPressed: _logout, icon: const Icon(Icons.logout),
-            label: const Text('Выйти из аккаунта')),
-        ],
-      )),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            const Icon(Icons.person_outline, size: 64),
+            const SizedBox(height: 12),
+            const Text(
+              'Учебный режим CampusSpace',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Вход и регистрация проверяют поля локально. Серверная учётная запись появится на L5.',
+            ),
+            const SizedBox(height: 16),
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 100),
+              child: DataView(
+                models: [rooms, bookings],
+                onRetry: () {
+                  context.read<RoomModel>().load();
+                  context.read<BookingModel>().load();
+                },
+                builder: (_) => Column(
+                  children: [
+                    LabeledValueRow(
+                      label: 'Помещений',
+                      value: '${rooms.rooms.length}',
+                    ),
+                    LabeledValueRow(
+                      label: 'В избранном',
+                      value: '${rooms.favoriteCount}',
+                    ),
+                    LabeledValueRow(
+                      label: 'Всего заявок',
+                      value: '${bookings.bookings.length}',
+                    ),
+                    LabeledValueRow(
+                      label: 'Активных заявок',
+                      value: '${bookings.activeCount}',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // The only screen that knows about mock infrastructure. Remove on L5.
+            SwitchListTile(
+              key: const ValueKey('simulateError'),
+              title: const Text('Симулировать сбой сети'),
+              subtitle: const Text(
+                'Включите и обновите каталог или отправьте форму.',
+              ),
+              value: _simulateError,
+              onChanged: (value) {
+                context.read<MockSettings>().simulateError = value;
+                setState(() => _simulateError = value);
+              },
+            ),
+            SwitchListTile(
+              key: const ValueKey('slowLoading'),
+              title: const Text('Задержка 3 секунды для скриншота'),
+              value: _slow,
+              onChanged: (value) {
+                context.read<MockSettings>().latency = Duration(
+                  milliseconds: value ? 3000 : 800,
+                );
+                setState(() => _slow = value);
+              },
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'L4: данные хранятся только в памяти. Hot restart восстанавливает начальные примеры.',
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: _logout,
+              icon: const Icon(Icons.logout),
+              label: const Text('Выйти из аккаунта'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

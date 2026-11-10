@@ -3,7 +3,7 @@ import 'booking.dart';
 import 'collection_model.dart';
 
 class BookingModel extends CollectionModel<Booking> {
-  BookingModel(BookingRepository repository) : super(repository);
+  BookingModel(BookingRepository super.repository);
   @override
   String idOf(Booking item) => item.id;
   List<Booking> get bookings => items;
