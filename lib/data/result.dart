@@ -1,0 +1,14 @@
+/// Expected failures are values, not exceptions escaping into widgets.
+sealed class Result<T> {
+  const Result();
+}
+
+final class Ok<T> extends Result<T> {
+  const Ok(this.value);
+  final T value;
+}
+
+final class Err<T> extends Result<T> {
+  const Err(this.msg);
+  final String msg;
+}
