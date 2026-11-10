@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../models/room_model.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.navigationShell});
@@ -12,20 +15,26 @@ class AppShell extends StatelessWidget {
     bottomNavigationBar: NavigationBar(
       selectedIndex: navigationShell.currentIndex,
       onDestinationSelected: navigationShell.goBranch,
-      destinations: const [
-        NavigationDestination(
+      destinations: [
+        const NavigationDestination(
           icon: Icon(Icons.meeting_room_outlined),
           label: 'Каталог',
         ),
-        NavigationDestination(
+        const NavigationDestination(
           icon: Icon(Icons.event_note_outlined),
           label: 'Мои заявки',
         ),
         NavigationDestination(
-          icon: Icon(Icons.favorite_border),
+          icon: Consumer<RoomModel>(
+            builder: (_, model, child) => Badge(
+              label: Text('${model.favoriteCount}'),
+              child: child!,
+            ),
+            child: const Icon(Icons.favorite_border),
+          ),
           label: 'Избранное',
         ),
-        NavigationDestination(
+        const NavigationDestination(
           icon: Icon(Icons.person_outline),
           label: 'Профиль',
         ),

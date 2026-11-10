@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
+import 'models/room_model.dart';
 import 'router.dart';
 
-void main() => runApp(const CampusSpaceApp());
+void main() => runApp(ChangeNotifierProvider(
+  create: (_) => RoomModel(),
+  child: const CampusSpaceApp(),
+));
 
 class CampusSpaceApp extends StatelessWidget {
   const CampusSpaceApp({super.key, this.routerConfig});
