@@ -23,7 +23,7 @@ class BookingDetailScreen extends StatelessWidget {
       builder: (dialogCtx) => AlertDialog(
         title: const Text('Отменить бронирование?'),
         content: const Text(
-          'Статус изменится на «Отменено», а время помещения освободится.',
+          'Статус изменится на «Отменена», а время помещения освободится.',
         ),
         actions: [
           TextButton(
