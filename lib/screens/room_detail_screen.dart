@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../data/mock_data.dart';
+import 'package:provider/provider.dart';
+import '../models/room_model.dart';
+import '../models/booking_model.dart';
+import '../widgets/data_view.dart';
 import '../widgets/labeled_value_row.dart';
 import 'not_found_screen.dart';
 
@@ -12,13 +15,21 @@ class RoomDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final room = MockData.findRoom(id);
-    if (room == null) return const NotFoundScreen();
+    final model = context.watch<RoomModel>();
+    final bookings = context.watch<BookingModel>();
+    final room = model.byId(id);
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: Text(room.name)),
-      body: SafeArea(
-        child: ListView(
+      appBar: AppBar(title: Text(room?.name ?? 'Помещение')),
+      body: SafeArea(child: DataView(models: [model, bookings],
+        onRetry: () {
+          context.read<RoomModel>().load();
+          context.read<BookingModel>().load();
+        },
+        builder: (context) {
+          if (room == null) return const NotFoundScreen();
+          final occupied = bookings.bookings.where((b) => b.roomId == id && b.isActive).toList();
+          return ListView(
           padding: const EdgeInsets.all(16),
           children: [
             Container(
@@ -60,16 +71,26 @@ class RoomDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Пример расписания',
+              'Активные заявки на помещение',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            const Card(
-              child: ListTile(
-                leading: Icon(Icons.event_available_outlined),
-                title: Text('Сегодня: 10:00–12:00, 15:00–17:00'),
-                subtitle: Text('Свободные интервалы — демонстрационные'),
-              ),
+            if (occupied.isEmpty) const Text('Активных заявок нет'),
+            for (final booking in occupied)
+              ListTile(key: ValueKey(booking.id),
+                leading: const Icon(Icons.event_note),
+                title: Text('${booking.date} · ${booking.time}'),
+                subtitle: Text(booking.purpose),
+                onTap: () => context.push('/bookings/${booking.id}')),
+            OutlinedButton.icon(
+              key: const ValueKey('toggleFavorite'),
+              onPressed: model.isSaving ? null : () async {
+                final error = await context.read<RoomModel>().toggleFavorite(id);
+                if (!context.mounted) return;
+                if (error != null) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+              },
+              icon: Icon(room.isFavorite ? Icons.favorite : Icons.favorite_border),
+              label: Text(room.isFavorite ? 'Убрать из избранного' : 'В избранное'),
             ),
             const SizedBox(height: 20),
             FilledButton.icon(
@@ -79,8 +100,9 @@ class RoomDetailScreen extends StatelessWidget {
               label: const Text('Выбрать помещение'),
             ),
           ],
-        ),
-      ),
+          );
+        },
+      )),
     );
   }
 }
