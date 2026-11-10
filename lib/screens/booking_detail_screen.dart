@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../data/mock_data.dart';
+import 'package:provider/provider.dart';
+import '../models/booking_model.dart';
+import '../models/room_model.dart';
+import '../widgets/data_view.dart';
+import '../widgets/booking_actions.dart';
 import '../models/booking.dart';
 import '../widgets/booking_status_badge.dart';
 import '../widgets/labeled_value_row.dart';
@@ -18,7 +22,7 @@ class BookingDetailScreen extends StatelessWidget {
       builder: (dialogCtx) => AlertDialog(
         title: const Text('Отменить бронирование?'),
         content: const Text(
-          'Учебная демонстрация: статус заявки не изменится.',
+          'Статус изменится на «Отменено», а время помещения освободится.',
         ),
         actions: [
           TextButton(
@@ -33,30 +37,34 @@ class BookingDetailScreen extends StatelessWidget {
       ),
     );
     if (ok == true && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Отмена подтверждена. Демо: статус не изменён.'),
-        ),
-      );
+      final error = await context.read<BookingModel>().cancel(id);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(error ?? 'Бронирование отменено'),
+      ));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final booking = MockData.findBooking(id);
-    if (booking == null) return const NotFoundScreen();
-    final room = MockData.roomById(booking.roomId);
+    final model = context.watch<BookingModel>();
+    final rooms = context.watch<RoomModel>();
+    final booking = model.byId(id);
+    final room = booking == null ? null : rooms.byId(booking.roomId);
     return Scaffold(
-      appBar: AppBar(title: Text('Заявка ${booking.id}')),
-      body: SafeArea(
-        child: ListView(
+      appBar: AppBar(title: Text('Заявка $id')),
+      body: SafeArea(child: DataView(models: [model, rooms],
+        onRetry: () { context.read<BookingModel>().load(); context.read<RoomModel>().load(); },
+        builder: (context) {
+          if (booking == null) return const NotFoundScreen();
+          return ListView(
           padding: const EdgeInsets.all(16),
           children: [
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    room.name,
+                    room?.name ?? 'Помещение ${booking.roomId} недоступно',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                 ),
@@ -77,29 +85,39 @@ class BookingDetailScreen extends StatelessWidget {
               child: ListTile(
                 leading: const Icon(Icons.meeting_room_outlined),
                 title: const Text('О помещении'),
-                subtitle: Text('${room.building} · ${room.floor} этаж'),
+                subtitle: Text(room == null ? 'Помещение недоступно' : '${room.building} · ${room.floor} этаж'),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.go('/rooms/${room.id}'),
+                onTap: room == null ? null : () => context.go('/rooms/${room.id}'),
               ),
             ),
             const SizedBox(height: 16),
             Text(
-              'Статус показан из локальных примеров. '
-              'Реальные заявки и изменения статуса появятся на L5.',
+              'L4: изменения хранятся в памяти до перезапуска приложения.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             if (booking.status == BookingStatus.pending ||
                 booking.status == BookingStatus.approved) ...[
               const SizedBox(height: 16),
               OutlinedButton.icon(
-                onPressed: () => _cancel(context),
+                onPressed: model.isSaving ? null : () => _cancel(context),
                 icon: const Icon(Icons.cancel_outlined),
                 label: const Text('Отменить бронирование'),
               ),
             ],
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: model.isSaving ? null : () async {
+                final deleted = await deleteBooking(context, id);
+                if (deleted && context.mounted) {
+                  if (context.canPop()) { context.pop(); } else { context.go('/bookings'); }
+                }
+              },
+              icon: const Icon(Icons.delete_outline), label: const Text('Удалить заявку'),
+            ),
           ],
-        ),
-      ),
+          );
+        },
+      )),
     );
   }
 }
