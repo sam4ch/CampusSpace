@@ -1,0 +1,280 @@
+openapi: 3.0.3
+info:
+  title: CampusSpace - PAM template API
+  version: 1.0.0
+  description: |
+    Independently reconstructed from the supplied Dart template and L5.
+    This is NOT the missing instructor-provided OpenAPI specification.
+    Documents the base API only; CampusSpace entities will be added later.
+    Error message text is descriptive; clients must branch on error.code.
+    Unknown routes return 404 NOT_FOUND. Lab CORS permits all origins,
+    GET/POST/PUT/DELETE/OPTIONS and Content-Type/Authorization headers.
+    JSON string inputs are trimmed. Empty required strings are rejected.
+servers:
+  - url: http://localhost:8080
+    description: Local server
+  - url: http://10.0.2.2:8080
+    description: Android emulator access to the host
+security:
+  - bearerAuth: []
+paths:
+  /health:
+    get:
+      operationId: health
+      security: []
+      responses:
+        '200':
+          description: Server is running
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: {type: string, enum: [ok]}
+  /auth/register:
+    post:
+      operationId: register
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name]
+              properties:
+                email: {type: string, minLength: 1, pattern: '@'}
+                password: {type: string, minLength: 1}
+                name: {type: string, minLength: 1}
+      responses:
+        '201': {$ref: '#/components/responses/Auth'}
+        '400': {$ref: '#/components/responses/ValidationError'}
+        '409': {$ref: '#/components/responses/EmailTaken'}
+  /auth/login:
+    post:
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: {type: string, minLength: 1}
+                password: {type: string, minLength: 1}
+      responses:
+        '200': {$ref: '#/components/responses/Auth'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /me:
+    get:
+      operationId: currentUser
+      responses:
+        '200':
+          description: Current authenticated user
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/User'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /notes:
+    get:
+      operationId: listNotes
+      description: |
+        Current user's notes only, descending ID order. Search matches title
+        or content using SQLite LIKE; percent and underscore are wildcards.
+        Invalid page/limit values use defaults; page is clamped to at least 1,
+        limit to 1..100. total counts matches before pagination.
+      parameters:
+        - {name: page, in: query, schema: {type: integer, minimum: 1, default: 1}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+        - {name: search, in: query, schema: {type: string, default: ''}}
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, page, limit, total]
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/Note'}}
+                  page: {type: integer, minimum: 1}
+                  limit: {type: integer, minimum: 1, maximum: 100}
+                  total: {type: integer, minimum: 0}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+    post:
+      operationId: createNote
+      requestBody: {$ref: '#/components/requestBodies/NoteInput'}
+      responses:
+        '201': {$ref: '#/components/responses/Note'}
+        '400': {$ref: '#/components/responses/ValidationError'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /notes/{id}:
+    parameters:
+      - {$ref: '#/components/parameters/Id'}
+    get:
+      operationId: getNote
+      description: A foreign user's note and a missing note both return 404.
+      responses:
+        '200': {$ref: '#/components/responses/Note'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      operationId: updateNote
+      description: Requires title; omitted content becomes empty. Foreign notes return 404.
+      requestBody: {$ref: '#/components/requestBodies/NoteInput'}
+      responses:
+        '200': {$ref: '#/components/responses/Note'}
+        '400': {$ref: '#/components/responses/ValidationError'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    delete:
+      operationId: deleteNote
+      description: Foreign notes return 404. Deletion is permanent.
+      responses:
+        '204': {description: Deleted successfully; empty response body}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /files:
+    post:
+      operationId: uploadFile
+      description: |
+        Multipart field file; maximum file size 5242880 bytes (5 MiB).
+        Template additionally rejects declared request Content-Length above
+        5242880, including multipart overhead. Use smaller files near the limit.
+        Oversize, missing file field and malformed multipart return 400.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: {type: string, format: binary}
+      responses:
+        '201':
+          description: Stored file metadata; url is relative to the API server
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StoredFile'}
+        '400': {$ref: '#/components/responses/ValidationError'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /files/{id}:
+    parameters:
+      - {$ref: '#/components/parameters/Id'}
+    get:
+      operationId: downloadFile
+      security: []
+      description: Public download, original stored MIME type and bytes.
+      responses:
+        '200':
+          description: Binary content (MIME type depends on uploaded file)
+          headers:
+            Content-Disposition: {schema: {type: string, enum: [attachment]}}
+            X-Content-Type-Options: {schema: {type: string, enum: [nosniff]}}
+            Content-Security-Policy: {schema: {type: string, example: "default-src 'none'; sandbox"}}
+            Content-Length: {schema: {type: integer, minimum: 0}}
+          content:
+            '*/*':
+              schema: {type: string, format: binary}
+        '404': {$ref: '#/components/responses/NotFound'}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: HS256 token returned by login/register; template lifetime is 7 days.
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: {type: integer, minimum: 1}
+      description: Server-generated ID. Invalid or missing IDs return 404.
+  requestBodies:
+    NoteInput:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [title]
+            properties:
+              title: {type: string, minLength: 1}
+              content: {type: string, default: ''}
+          example: {title: 'Покупки', content: 'молоко, хлеб'}
+  schemas:
+    User:
+      type: object
+      required: [id, email, name]
+      properties:
+        id: {type: integer, minimum: 1}
+        email: {type: string}
+        name: {type: string}
+    Note:
+      type: object
+      required: [id, title, content, createdAt]
+      properties:
+        id: {type: integer, minimum: 1}
+        title: {type: string}
+        content: {type: string}
+        createdAt: {type: string, format: date-time}
+    StoredFile:
+      type: object
+      required: [id, url, name, size, mimeType]
+      properties:
+        id: {type: integer, minimum: 1}
+        url: {type: string, example: /files/7}
+        name: {type: string}
+        size: {type: integer, minimum: 0, maximum: 5242880}
+        mimeType: {type: string}
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: {type: string, enum: [VALIDATION_ERROR, UNAUTHORIZED, EMAIL_TAKEN, NOT_FOUND]}
+            message: {type: string, minLength: 1}
+  responses:
+    Auth:
+      description: Authentication succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [token, user]
+            properties:
+              token: {type: string, minLength: 1}
+              user: {$ref: '#/components/schemas/User'}
+    Note:
+      description: Note representation
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Note'}
+    ValidationError:
+      description: Invalid request; error.code is VALIDATION_ERROR
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+    Unauthorized:
+      description: Missing/invalid token or invalid login; error.code is UNAUTHORIZED
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+    NotFound:
+      description: Missing or foreign resource; error.code is NOT_FOUND
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+    EmailTaken:
+      description: Email already registered; error.code is EMAIL_TAKEN
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
