@@ -1,0 +1,6 @@
+name: campus_space_conformance
+description: Independently authored checks for the PAM template API.
+version: 1.0.0
+publish_to: none
+environment:
+  sdk: ^3.5.0
