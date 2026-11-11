@@ -1,0 +1,159 @@
+{
+  "suite": "CampusSpace custom conformance",
+  "version": "1.0.0",
+  "officialCourseSuite": false,
+  "baseUrl": "http://localhost:8080",
+  "timestampUtc": "2026-11-11T13:38:59.077978Z",
+  "passed": 37,
+  "total": 37,
+  "results": [
+    {
+      "name": "Health",
+      "passed": true
+    },
+    {
+      "name": "CORS preflight",
+      "passed": true
+    },
+    {
+      "name": "Notes require auth",
+      "passed": true
+    },
+    {
+      "name": "Invalid token",
+      "passed": true
+    },
+    {
+      "name": "Register user",
+      "passed": true
+    },
+    {
+      "name": "Registration validates name",
+      "passed": true
+    },
+    {
+      "name": "Duplicate email",
+      "passed": true
+    },
+    {
+      "name": "Incorrect password",
+      "passed": true
+    },
+    {
+      "name": "Login",
+      "passed": true
+    },
+    {
+      "name": "Authenticated profile",
+      "passed": true
+    },
+    {
+      "name": "Profile requires auth",
+      "passed": true
+    },
+    {
+      "name": "New user empty list",
+      "passed": true
+    },
+    {
+      "name": "Create note",
+      "passed": true
+    },
+    {
+      "name": "Read note",
+      "passed": true
+    },
+    {
+      "name": "Create another note, default content",
+      "passed": true
+    },
+    {
+      "name": "Distinct pages in descending ID order",
+      "passed": true
+    },
+    {
+      "name": "Cyrillic title search",
+      "passed": true
+    },
+    {
+      "name": "Content search",
+      "passed": true
+    },
+    {
+      "name": "Search without matches",
+      "passed": true
+    },
+    {
+      "name": "Update persisted note",
+      "passed": true
+    },
+    {
+      "name": "Invalid create",
+      "passed": true
+    },
+    {
+      "name": "Invalid update preserves data",
+      "passed": true
+    },
+    {
+      "name": "Malformed JSON",
+      "passed": true
+    },
+    {
+      "name": "Missing note",
+      "passed": true
+    },
+    {
+      "name": "Second user has isolated list",
+      "passed": true
+    },
+    {
+      "name": "Foreign GET is 404",
+      "passed": true
+    },
+    {
+      "name": "Foreign PUT is 404",
+      "passed": true
+    },
+    {
+      "name": "Foreign DELETE is 404",
+      "passed": true
+    },
+    {
+      "name": "Delete returns empty 204",
+      "passed": true
+    },
+    {
+      "name": "Deleted note stays absent",
+      "passed": true
+    },
+    {
+      "name": "Upload requires auth",
+      "passed": true
+    },
+    {
+      "name": "Multipart upload metadata",
+      "passed": true
+    },
+    {
+      "name": "Public download bytes and protective headers",
+      "passed": true
+    },
+    {
+      "name": "Missing file",
+      "passed": true
+    },
+    {
+      "name": "Missing multipart field",
+      "passed": true
+    },
+    {
+      "name": "Malformed multipart",
+      "passed": true
+    },
+    {
+      "name": "Upload over 5 MiB rejected",
+      "passed": true
+    }
+  ]
+}

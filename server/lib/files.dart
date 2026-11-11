@@ -1,5 +1,6 @@
 // File upload/download. Bytes live in uploads/, metadata in the database.
 
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -28,7 +29,32 @@ void initFileStorage(String path) {
 }
 
 /// POST /files  (multipart, field "file") -> 201 {id, url, name, size, mimeType}
-Future<Response> uploadFile(Request request) async {
+Future<Response> uploadFile(Request request) {
+  final completion = Completer<Response>();
+  // The bundled multipart parser may throw from its stream callback instead
+  // of emitting an error on the awaited stream. Catch that at the request
+  // boundary too, otherwise a malformed header leaves the HTTP call hanging.
+  void fail(Object error, StackTrace stack) {
+    if (completion.isCompleted) return;
+    if (error is Exception) {
+      completion.complete(validationError('Malformed multipart/form-data body'));
+    } else {
+      completion.completeError(error, stack);
+    }
+  }
+
+  runZonedGuarded(() async {
+    try {
+      final response = await _uploadFile(request);
+      if (!completion.isCompleted) completion.complete(response);
+    } catch (error, stack) {
+      fail(error, stack);
+    }
+  }, fail);
+  return completion.future;
+}
+
+Future<Response> _uploadFile(Request request) async {
   // Cheap early rejection when the client declares the size upfront.
   // Not sufficient on its own: Content-Length can be absent (chunked
   // encoding) or lie, so the bytes are counted again while reading.
